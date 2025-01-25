@@ -57,7 +57,7 @@ type QueryChangeMsg string
 
 func NewList(items ...sunbeam.ListItem) *List {
 	filter := NewFilter()
-	filter.DrawLines = true
+	// filter.DrawLines = true
 
 	statusBar := NewStatusBar()
 
