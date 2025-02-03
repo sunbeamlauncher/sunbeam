@@ -121,15 +121,28 @@ func NewCmdServe() *cobra.Command {
 				}
 
 				fmt.Fprintln(cmd.OutOrStdout(), "Listening on", socketPath)
-				return http.Serve(listener, httplog.Logger(http.DefaultServeMux))
+				return http.Serve(listener, httplog.Logger(cors(http.DefaultServeMux)))
 			}
 
 			fmt.Fprintln(cmd.OutOrStdout(), "Listening on", flags.addr)
-			return http.ListenAndServe(flags.addr, httplog.Logger(http.DefaultServeMux))
+			return http.ListenAndServe(flags.addr, httplog.Logger(cors(http.DefaultServeMux)))
 		},
 	}
 
 	cmd.Flags().StringVar(&flags.addr, "addr", ":8080", "address to listen on")
 
 	return cmd
+}
+
+func cors(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
 }
