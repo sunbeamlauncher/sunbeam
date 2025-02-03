@@ -37,7 +37,7 @@ func NewRootCmd() (*cobra.Command, error) {
 See https://pomdtr.github.io/sunbeam for more information.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if flags.reload {
-				exts, err := LoadExtensions(utils.ExtensionsDir(), false)
+				exts, err := LoadExtensions(utils.ExtensionsDir(), true)
 				if err != nil {
 					return fmt.Errorf("failed to reload extensions: %w", err)
 				}
@@ -46,7 +46,7 @@ See https://pomdtr.github.io/sunbeam for more information.`,
 			}
 
 			if !isatty.IsTerminal(os.Stdout.Fd()) {
-				exts, err := LoadExtensions(utils.ExtensionsDir(), true)
+				exts, err := LoadExtensions(utils.ExtensionsDir(), false)
 				if err != nil {
 					return nil
 				}
@@ -62,7 +62,7 @@ See https://pomdtr.github.io/sunbeam for more information.`,
 			}
 
 			rootList := tui.NewRootList(history, func() ([]sunbeam.ListItem, error) {
-				exts, err := LoadExtensions(utils.ExtensionsDir(), true)
+				exts, err := LoadExtensions(utils.ExtensionsDir(), false)
 				if err != nil {
 					return nil, err
 				}
@@ -84,16 +84,12 @@ See https://pomdtr.github.io/sunbeam for more information.`,
 	rootCmd.AddCommand(NewCmdFetch())
 	rootCmd.AddCommand(NewCmdServe())
 
-	if _, found := os.LookupEnv("SUNBEAM"); found {
-		return rootCmd, nil
-	}
-
 	rootCmd.AddGroup(&cobra.Group{
 		ID:    "extension",
 		Title: "Extensions Commands:",
 	})
 
-	exts, err := LoadExtensions(utils.ExtensionsDir(), true)
+	exts, err := LoadExtensions(utils.ExtensionsDir(), false)
 	if errors.Is(err, os.ErrNotExist) {
 		return rootCmd, nil
 	} else if err != nil {
@@ -111,7 +107,7 @@ See https://pomdtr.github.io/sunbeam for more information.`,
 	return rootCmd, nil
 }
 
-func LoadExtensions(extensionDir string, useCache bool) ([]extensions.Extension, error) {
+func LoadExtensions(extensionDir string, reload bool) ([]extensions.Extension, error) {
 	extensionMap := make(map[string]struct{})
 	exts := make([]extensions.Extension, 0)
 	entries, err := os.ReadDir(extensionDir)
@@ -128,14 +124,14 @@ func LoadExtensions(extensionDir string, useCache bool) ([]extensions.Extension,
 			continue
 		}
 
-		extension, err := extensions.LoadExtension(filepath.Join(extensionDir, entry.Name()), useCache)
+		extension, err := extensions.LoadExtension(filepath.Join(extensionDir, entry.Name()), reload)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "failed to load extension %s: %v\n", entry.Name(), err)
+			fmt.Fprintf(os.Stderr, "failed to load extension %s: %v", entry.Name(), err)
 			continue
 		}
 
 		if _, ok := extensionMap[extension.Name]; ok {
-			fmt.Fprintf(os.Stderr, "duplicate extension alias: %s\n", extension.Name)
+			fmt.Fprintf(os.Stderr, "duplicate extension alias: %s", extension.Name)
 			continue
 		}
 

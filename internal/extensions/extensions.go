@@ -138,7 +138,7 @@ func FindEntrypoint(extensionDir string, name string) (string, error) {
 	return "", fmt.Errorf("entrypoint not found")
 }
 
-func LoadExtension(entrypoint string, useCache bool) (Extension, error) {
+func LoadExtension(entrypoint string, reload bool) (Extension, error) {
 	name := strings.TrimSuffix(filepath.Base(entrypoint), filepath.Ext(entrypoint))
 
 	entrypointInfo, err := os.Stat(entrypoint)
@@ -162,7 +162,11 @@ func LoadExtension(entrypoint string, useCache bool) (Extension, error) {
 	}
 
 	manifestPath := filepath.Join(utils.CacheDir(), "extensions", name+".json")
-	if manifestInfo, err := os.Stat(manifestPath); err != nil || !useCache || entrypointInfo.ModTime().After(manifestInfo.ModTime()) {
+	if manifestInfo, err := os.Stat(manifestPath); err != nil || entrypointInfo.ModTime().After(manifestInfo.ModTime()) || reload {
+		if os.Getenv("SUNBEAM") == "1" {
+			return Extension{}, errors.New("nested extension detected")
+		}
+
 		manifest, err := cacheManifest(entrypoint, manifestPath)
 		if err != nil {
 			return Extension{}, err
