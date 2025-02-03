@@ -22,7 +22,8 @@ func NewCmdServe() *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use: "serve",
+		Use:   "serve",
+		Short: "Serve the extension API",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			http.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
 				exts, err := LoadExtensions(utils.ExtensionsDir(), true)
