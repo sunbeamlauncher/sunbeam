@@ -14,7 +14,6 @@ func NewCmdFetch() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "fetch",
 		Short: "Fetch a remote extension",
-		Long:  "Fetch a remote extension",
 		Args:  cobra.RangeArgs(1, 2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if len(args) == 1 {
