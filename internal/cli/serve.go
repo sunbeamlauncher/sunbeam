@@ -25,17 +25,6 @@ func NewCmdServe() *cobra.Command {
 		Use: "serve",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			http.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-
-				encoder := json.NewEncoder(w)
-				encoder.SetEscapeHTML(false)
-				_ = encoder.Encode(map[string]interface{}{
-					"version": Version,
-				})
-			})
-
-			http.HandleFunc("GET /extensions", func(w http.ResponseWriter, r *http.Request) {
 				exts, err := LoadExtensions(utils.ExtensionsDir(), true)
 				if err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -50,7 +39,7 @@ func NewCmdServe() *cobra.Command {
 				_ = encoder.Encode(exts)
 			})
 
-			http.HandleFunc("GET /extensions/{extension}", func(w http.ResponseWriter, r *http.Request) {
+			http.HandleFunc("GET /{extension}", func(w http.ResponseWriter, r *http.Request) {
 				entrypoint, err := extensions.FindEntrypoint(utils.ExtensionsDir(), r.PathValue("extension"))
 				if err != nil {
 					http.Error(w, err.Error(), http.StatusNotFound)
@@ -71,7 +60,7 @@ func NewCmdServe() *cobra.Command {
 				_ = encoder.Encode(extension)
 			})
 
-			http.HandleFunc("POST /extensions/{extension}/{command}", func(w http.ResponseWriter, r *http.Request) {
+			http.HandleFunc("POST /{extension}/{command}", func(w http.ResponseWriter, r *http.Request) {
 				entrypoint, err := extensions.FindEntrypoint(utils.ExtensionsDir(), r.PathValue("extension"))
 				if err != nil {
 					http.Error(w, err.Error(), http.StatusNotFound)
