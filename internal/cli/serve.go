@@ -3,13 +3,13 @@ package cli
 import (
 	"encoding/json"
 	"fmt"
-	"net"
 	"net/http"
 	"os"
 	"os/exec"
 	"strings"
 
 	"github.com/MadAppGang/httplog"
+	"github.com/google/uuid"
 	"github.com/pomdtr/sunbeam/internal/extensions"
 	"github.com/pomdtr/sunbeam/internal/utils"
 	"github.com/pomdtr/sunbeam/pkg/sunbeam"
@@ -18,7 +18,11 @@ import (
 
 func NewCmdServe() *cobra.Command {
 	var flags struct {
-		addr string
+		host                   string
+		port                   int
+		connectionToken        string
+		connectionTokenFile    string
+		withoutConnectionToken bool
 	}
 
 	cmd := &cobra.Command{
@@ -107,31 +111,66 @@ func NewCmdServe() *cobra.Command {
 				_, _ = w.Write(output)
 			})
 
-			if strings.HasPrefix(flags.addr, "unix/") {
-				socketPath := strings.TrimPrefix(flags.addr, "unix/")
-				if _, err := os.Stat(socketPath); err == nil {
-					if err := os.Remove(socketPath); err != nil {
-						return fmt.Errorf("failed to remove existing socket: %w", err)
-					}
-				}
-
-				listener, err := net.Listen("unix", socketPath)
+			var connectionToken string
+			if flags.connectionToken != "" {
+				connectionToken = flags.connectionToken
+			} else if flags.connectionTokenFile != "" {
+				b, err := os.ReadFile(flags.connectionTokenFile)
 				if err != nil {
-					return fmt.Errorf("failed to listen on unix socket: %w", err)
+					return fmt.Errorf("failed to read connection token file: %w", err)
 				}
 
-				fmt.Fprintln(cmd.OutOrStdout(), "Listening on", socketPath)
-				return http.Serve(listener, httplog.Logger(cors(http.DefaultServeMux)))
+				connectionToken = strings.TrimSpace(string(b))
+			} else if !flags.withoutConnectionToken {
+				token, err := uuid.NewRandom()
+				if err != nil {
+					return fmt.Errorf("failed to generate connection token: %w", err)
+				}
+
+				connectionToken = token.String()
 			}
 
-			fmt.Fprintln(cmd.OutOrStdout(), "Listening on", flags.addr)
-			return http.ListenAndServe(flags.addr, httplog.Logger(cors(http.DefaultServeMux)))
+			var handler http.Handler = http.DefaultServeMux
+			handler = cors(handler)
+
+			addr := fmt.Sprintf("%s:%d", flags.host, flags.port)
+			if connectionToken != "" {
+				handler = withConnectionToken(connectionToken, handler)
+				fmt.Fprintf(cmd.ErrOrStderr(), "Server available at http://%s?tkn=%s\n", addr, connectionToken)
+			} else {
+				fmt.Fprintf(cmd.ErrOrStderr(), "Server available at http://%s\n", addr)
+			}
+
+			handler = httplog.Logger(handler)
+			return http.ListenAndServe(addr, handler)
 		},
 	}
 
-	cmd.Flags().StringVar(&flags.addr, "addr", ":8080", "address to listen on")
+	cmd.Flags().StringVar(&flags.host, "host", "127.0.0.1", "host to listen on")
+	cmd.Flags().IntVar(&flags.port, "port", 8080, "port to listen on")
+	cmd.Flags().StringVar(&flags.connectionToken, "connection-token", "", "connection token")
+	cmd.Flags().StringVar(&flags.connectionTokenFile, "connection-token-file", "", "file containing the connection token")
+	cmd.Flags().BoolVar(&flags.withoutConnectionToken, "without-connection-token", false, "disable connection token")
+
+	cmd.MarkFlagsMutuallyExclusive("connection-token", "connection-token-file", "without-connection-token")
 
 	return cmd
+}
+
+func withConnectionToken(token string, next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if tokenParam := r.URL.Query().Get("tkn"); tokenParam == token {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		if auth := r.Header.Get("Authorization"); auth == fmt.Sprintf("Bearer %s", token) {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+	})
 }
 
 func cors(next http.Handler) http.Handler {
