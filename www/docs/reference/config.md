@@ -7,7 +7,7 @@ The config will be searched in the following locations in order:
 - `$SUNBEAM_CONFIG`
 - `$PWD/sunbeam.json`, and all parent directories
 - `$XDG_CONFIG_HOME/sunbeam/sunbeam.json` if `XDG_CONFIG_HOME` is set
-- `$HOME/.config/sunbeam/config.json`
+- `$HOME/.config/sunbeam/sunbeam.json`
 
 If no config is found, and the `SUNBEAM_CONFIG` environment variable is not set, a default config will be created.
 
