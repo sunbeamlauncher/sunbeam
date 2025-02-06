@@ -54,9 +54,6 @@ func NewDetail(text string, actions ...sunbeam.Action) *Detail {
 		})
 	}
 
-	filter := NewFilter(items...)
-	filter.DrawLines = true
-
 	input := textinput.New()
 	input.PlaceholderStyle = lipgloss.NewStyle().Faint(true)
 	input.Prompt = ""

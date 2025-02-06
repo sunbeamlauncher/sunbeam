@@ -42,9 +42,7 @@ func ExitCmd() tea.Msg {
 
 type Paginator struct {
 	width, height int
-
-	pages  []Page
-	hidden bool
+	pages         []Page
 }
 
 func NewPaginator(root Page) *Paginator {
@@ -66,7 +64,6 @@ func (m *Paginator) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.Type {
 		case tea.KeyCtrlC:
-			m.hidden = true
 			return m, tea.Quit
 		}
 	case tea.WindowSizeMsg:
@@ -84,10 +81,8 @@ func (m *Paginator) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, m.Pop()
 		}
 
-		m.hidden = true
 		return m, tea.Quit
 	case ExitMsg:
-		m.hidden = true
 		return m, tea.Quit
 	}
 
@@ -105,10 +100,6 @@ func (m *Paginator) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m *Paginator) View() string {
-	if m.hidden {
-		return ""
-	}
-
 	if len(m.pages) > 0 {
 		currentPage := m.pages[len(m.pages)-1]
 		return currentPage.View()
