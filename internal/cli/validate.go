@@ -5,7 +5,8 @@ import (
 	"io"
 	"os"
 
-	"github.com/mattn/go-isatty"
+	"golang.org/x/term"
+
 	"github.com/pomdtr/sunbeam/internal/schemas"
 	"github.com/spf13/cobra"
 )
@@ -30,7 +31,7 @@ func NewCmdValidateList() *cobra.Command {
 		Short:   "Validate a filter/generator page",
 		Args:    cobra.NoArgs,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if isatty.IsTerminal(os.Stdin.Fd()) {
+			if term.IsTerminal(int(os.Stdin.Fd())) {
 				return fmt.Errorf("no input provided")
 			}
 
@@ -58,7 +59,7 @@ func NewCmdValidateDetail() *cobra.Command {
 		Short: "Validate a detail page",
 		Args:  cobra.NoArgs,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if isatty.IsTerminal(os.Stdin.Fd()) {
+			if term.IsTerminal(int(os.Stdin.Fd())) {
 				return fmt.Errorf("no input provided")
 			}
 
@@ -87,7 +88,7 @@ func NewCmdValidateManifest() *cobra.Command {
 		Short: "Validate an extension manifest",
 		Args:  cobra.NoArgs,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if isatty.IsTerminal(os.Stdin.Fd()) {
+			if term.IsTerminal(int(os.Stdin.Fd())) {
 				return fmt.Errorf("no input provided")
 			}
 

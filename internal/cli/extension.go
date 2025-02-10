@@ -8,10 +8,13 @@ import (
 	"os"
 	"sort"
 
-	"github.com/mattn/go-isatty"
+	"golang.org/x/term"
+
+	"github.com/atotto/clipboard"
 	"github.com/pomdtr/sunbeam/internal/extensions"
 	"github.com/pomdtr/sunbeam/internal/history"
 	"github.com/pomdtr/sunbeam/internal/tui"
+	"github.com/pomdtr/sunbeam/internal/utils"
 	"github.com/pomdtr/sunbeam/pkg/sunbeam"
 	"github.com/spf13/cobra"
 )
@@ -24,7 +27,7 @@ func NewCmdExtension(alias string, extension extensions.Extension) (*cobra.Comma
 		Args:    cobra.NoArgs,
 		GroupID: "extension",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if !isatty.IsTerminal(os.Stdout.Fd()) {
+			if !term.IsTerminal(int(os.Stdout.Fd())) {
 				encoder := json.NewEncoder(os.Stdout)
 				encoder.SetIndent("", "  ")
 				encoder.SetEscapeHTML(false)
@@ -71,7 +74,7 @@ func NewSubCmdCustom(alias string, extension extensions.Extension, command sunbe
 		Short: command.Description,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			params := make(map[string]any)
-			if !isatty.IsTerminal(os.Stdin.Fd()) {
+			if !term.IsTerminal(int(os.Stdin.Fd())) {
 				bts, err := io.ReadAll(os.Stdin)
 				if err != nil {
 					return err
@@ -134,7 +137,7 @@ func NewSubCmdCustom(alias string, extension extensions.Extension, command sunbe
 			cmd.Flags().Int(input.Name, 0, input.Description)
 		}
 
-		if !input.Optional && isatty.IsTerminal(os.Stdin.Fd()) {
+		if !input.Optional && term.IsTerminal(int(os.Stdin.Fd())) {
 			_ = cmd.MarkFlagRequired(input.Name)
 		}
 	}
@@ -143,7 +146,7 @@ func NewSubCmdCustom(alias string, extension extensions.Extension, command sunbe
 }
 
 func runExtension(extension extensions.Extension, command sunbeam.Command, params sunbeam.Params) error {
-	if !isatty.IsTerminal(os.Stdout.Fd()) {
+	if !term.IsTerminal(int(os.Stdout.Fd())) {
 		cmd, err := extension.CmdContext(context.Background(), command, params)
 		if err != nil {
 			return err
@@ -166,7 +169,36 @@ func runExtension(extension extensions.Extension, command sunbeam.Command, param
 		}
 
 		return cmd.Run()
+	case sunbeam.CommandModeAction:
+		output, err := extension.Output(context.Background(), command, params)
+		if err != nil {
+			return fmt.Errorf("failed to run command: %w", err)
+		}
+
+		var action sunbeam.Action
+		if err = json.Unmarshal(output, &action); err != nil {
+			return fmt.Errorf("failed to unmarshal action: %w", err)
+		}
+
+		switch action.Type {
+		case sunbeam.ActionTypeRun:
+			command, ok := extension.GetCommand(action.Run.Command)
+			if !ok {
+				return fmt.Errorf("command not found: %s", action.Run.Command)
+			}
+
+			return runExtension(extension, command, action.Run.Params)
+		case sunbeam.ActionTypeReload:
+			return nil
+		case sunbeam.ActionTypeOpen:
+			return utils.Open(action.Open.Url)
+		case sunbeam.ActionTypeCopy:
+			return clipboard.WriteAll(action.Copy.Text)
+		default:
+			return fmt.Errorf("unknown action type: %s", action.Type)
+		}
 	default:
 		return fmt.Errorf("unknown command mode: %s", command.Mode)
 	}
+
 }

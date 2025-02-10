@@ -32,6 +32,7 @@ const (
 	CommandModeSearch CommandMode = "search"
 	CommandModeFilter CommandMode = "filter"
 	CommandModeDetail CommandMode = "detail"
+	CommandModeAction CommandMode = "action"
 	CommandModeSilent CommandMode = "silent"
 )
 

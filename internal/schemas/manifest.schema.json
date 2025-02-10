@@ -47,6 +47,7 @@
                         "search",
                         "filter",
                         "detail",
+                        "action",
                         "silent"
                     ]
                 },

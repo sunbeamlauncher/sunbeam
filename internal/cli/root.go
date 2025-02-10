@@ -9,7 +9,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/mattn/go-isatty"
+	"golang.org/x/term"
+
 	"github.com/pomdtr/sunbeam/internal/extensions"
 	"github.com/pomdtr/sunbeam/internal/history"
 	"github.com/pomdtr/sunbeam/internal/tui"
@@ -45,7 +46,7 @@ See https://pomdtr.github.io/sunbeam for more information.`,
 				fmt.Fprintf(os.Stderr, "Reloaded %d extensions\n", len(exts))
 			}
 
-			if !isatty.IsTerminal(os.Stdout.Fd()) {
+			if !term.IsTerminal(int(os.Stdout.Fd())) {
 				exts, err := LoadExtensions(utils.ExtensionsDir(), false)
 				if err != nil {
 					return nil

@@ -199,6 +199,20 @@ func (c *Runner) Update(msg tea.Msg) (Page, tea.Cmd) {
 
 					return nil
 				}
+			case sunbeam.CommandModeAction:
+				return c, func() tea.Msg {
+					output, err := c.extension.Output(context.Background(), command, params)
+					if err != nil {
+						return PushPageMsg{NewErrorPage(err)}
+					}
+
+					var action sunbeam.Action
+					if err := json.Unmarshal(output, &action); err != nil {
+						return PushPageMsg{NewErrorPage(err)}
+					}
+
+					return action
+				}
 			}
 		case sunbeam.ActionTypeEdit:
 			editCmd := exec.Command(utils.FindEditor(), msg.Edit.Path)
