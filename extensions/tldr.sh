@@ -18,7 +18,8 @@ if [ $# -eq 0 ]; then
     # each command can be called through the cli
     commands: [
         { name: "list", mode: "filter", description: "Search Pages" },
-        { name: "view", mode: "detail", description: "View page", params: [{ name: "page", type: "string", description: "Page to show" }] }
+        { name: "view", mode: "detail", description: "View page", params: [{ name: "page", type: "string", description: "Page to show" }] },
+        { name: "update", mode: "silent", description: "Update cache" }
     ]
 }'
 exit 0
@@ -37,7 +38,8 @@ if [ "$COMMAND" = "list" ]; then
     tldr --list | jq -R '{
         title: .,
         actions: [
-            {title: "View Page", type: "run", command: "view", params: {page: .}}
+            {title: "View Page", type: "run", command: "view", params: {page: .}},
+            { title: "Update Cache", type: "run", command: "update" }
         ]
     }' | jq -s '{ items: . }'
 elif [ "$COMMAND" = "view" ]; then
@@ -47,4 +49,9 @@ elif [ "$COMMAND" = "view" ]; then
                 {title: "Copy Page", type: "copy", text: .}
             ]
         }'
+elif [ "$COMMAND" = "update" ]; then
+    tldr --update
+else
+    echo "Invalid command"
+    exit 1
 fi

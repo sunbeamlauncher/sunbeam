@@ -190,33 +190,34 @@ func (c *Runner) Update(msg tea.Msg) (Page, tea.Cmd) {
 
 				return c, PushPageCmd(runner)
 			case sunbeam.CommandModeAction:
-				return c, func() tea.Msg {
-					output, err := c.extension.Output(context.Background(), command, params)
-					if err != nil {
-						return PushPageMsg{NewErrorPage(err)}
-					}
+				return c, tea.Sequence(c.SetIsLoading(true),
+					func() tea.Msg {
+						output, err := c.extension.Output(context.Background(), command, params)
+						if err != nil {
+							return PushPageMsg{NewErrorPage(err)}
+						}
 
-					if len(output) == 0 {
-						return ReloadMsg{}
-					}
+						if len(output) == 0 {
+							return ReloadMsg{}
+						}
 
-					var action sunbeam.Action
-					if err := json.Unmarshal(output, &action); err != nil {
-						return PushPageMsg{NewErrorPage(err)}
-					}
+						var action sunbeam.Action
+						if err := json.Unmarshal(output, &action); err != nil {
+							return PushPageMsg{NewErrorPage(err)}
+						}
 
-					return action
-				}
+						return action
+					})
 			case sunbeam.CommandModeSilent:
-				return c, func() tea.Msg {
-					_, err := c.extension.Output(context.Background(), command, params)
+				return c, tea.Sequence(c.SetIsLoading(true),
+					func() tea.Msg {
+						_, err := c.extension.Output(context.Background(), command, params)
+						if err != nil {
+							return PushPageMsg{NewErrorPage(err)}
+						}
 
-					if err != nil {
-						return PushPageMsg{NewErrorPage(err)}
-					}
-
-					return ReloadMsg{}
-				}
+						return ReloadMsg{}
+					})
 			}
 		case sunbeam.ActionTypeCopy:
 			return c, func() tea.Msg {

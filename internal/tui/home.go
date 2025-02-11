@@ -1,14 +1,12 @@
 package tui
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
 	"sort"
-	"strings"
 
 	"github.com/atotto/clipboard"
 	tea "github.com/charmbracelet/bubbletea"
@@ -18,7 +16,7 @@ import (
 	"github.com/pomdtr/sunbeam/pkg/sunbeam"
 )
 
-type RootList struct {
+type HomePage struct {
 	width, height int
 	err           *Detail
 	list          *List
@@ -30,18 +28,18 @@ type RootList struct {
 
 type ReloadMsg struct{}
 
-func NewRootList(history history.History, generator func() ([]sunbeam.ListItem, error)) *RootList {
-	return &RootList{
+func NewHomePage(history history.History, generator func() ([]sunbeam.ListItem, error)) *HomePage {
+	return &HomePage{
 		history:   history,
 		generator: generator,
 	}
 }
 
-func (c *RootList) Init() tea.Cmd {
+func (c *HomePage) Init() tea.Cmd {
 	return c.Reload()
 }
 
-func (c *RootList) Reload() tea.Cmd {
+func (c *HomePage) Reload() tea.Cmd {
 	rootItems, err := c.generator()
 	if err != nil {
 		return c.SetError(err)
@@ -61,15 +59,15 @@ func (c *RootList) Reload() tea.Cmd {
 	}
 }
 
-func (c *RootList) Focus() tea.Cmd {
+func (c *HomePage) Focus() tea.Cmd {
 	return c.list.Focus()
 }
 
-func (c *RootList) Blur() tea.Cmd {
+func (c *HomePage) Blur() tea.Cmd {
 	return c.list.SetIsLoading(false)
 }
 
-func (c *RootList) SetSize(width, height int) {
+func (c *HomePage) SetSize(width, height int) {
 	c.width, c.height = width, height
 	if c.err != nil {
 		c.err.SetSize(width, height)
@@ -83,7 +81,7 @@ func (c *RootList) SetSize(width, height int) {
 	}
 }
 
-func (c *RootList) SetError(err error) tea.Cmd {
+func (c *HomePage) SetError(err error) tea.Cmd {
 	c.err = NewErrorPage(err)
 	c.err.SetSize(c.width, c.height)
 	return func() tea.Msg {
@@ -91,7 +89,7 @@ func (c *RootList) SetError(err error) tea.Cmd {
 	}
 }
 
-func (c *RootList) Update(msg tea.Msg) (Page, tea.Cmd) {
+func (c *HomePage) Update(msg tea.Msg) (Page, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
@@ -200,15 +198,9 @@ func (c *RootList) Update(msg tea.Msg) (Page, tea.Cmd) {
 				return c, PushPageCmd(runner)
 			case sunbeam.CommandModeSilent:
 				return c, func() tea.Msg {
-					output, err := extension.Output(context.Background(), command, params)
+					_, err := extension.Output(context.Background(), command, params)
 					if err != nil {
 						return PushPageMsg{NewErrorPage(err)}
-					}
-
-					if len(output) > 0 {
-						output = bytes.Trim(output, "\n")
-						rows := strings.Split(string(output), "\n")
-						return ShowNotificationMsg{rows[len(rows)-1]}
 					}
 
 					return ExitMsg{}
@@ -280,7 +272,7 @@ func (c *RootList) Update(msg tea.Msg) (Page, tea.Cmd) {
 	return c, nil
 }
 
-func (c *RootList) View() string {
+func (c *HomePage) View() string {
 	if c.err != nil {
 		return c.err.View()
 	}

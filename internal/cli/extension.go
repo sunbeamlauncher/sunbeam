@@ -44,7 +44,7 @@ func NewCmdExtension(alias string, extension extensions.Extension) (*cobra.Comma
 				return err
 			}
 
-			rootList := tui.NewRootList(history, func() ([]sunbeam.ListItem, error) {
+			rootList := tui.NewHomePage(history, func() ([]sunbeam.ListItem, error) {
 				return extension.RootItems(), nil
 			})
 
@@ -167,6 +167,9 @@ func runExtension(extension extensions.Extension, command sunbeam.Command, param
 		if err != nil {
 			return err
 		}
+
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
 
 		return cmd.Run()
 	case sunbeam.CommandModeAction:

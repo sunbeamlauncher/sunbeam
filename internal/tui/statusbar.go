@@ -29,7 +29,8 @@ type StatusBar struct {
 }
 
 type ShowNotificationMsg struct {
-	Title string
+	Reload  bool
+	Message string
 }
 
 type HideNotificationMsg struct{}
@@ -114,11 +115,11 @@ func (p StatusBar) Update(msg tea.Msg) (StatusBar, tea.Cmd) {
 		}
 	case ShowNotificationMsg:
 		p.Reset()
-		if msg.Title == "" {
+		if msg.Message == "" {
 			return p, nil
 		}
 
-		p.notification = msg.Title
+		p.notification = msg.Message
 		return p, tea.Tick(1*time.Second, func(t time.Time) tea.Msg {
 			return HideNotificationMsg{}
 		})
