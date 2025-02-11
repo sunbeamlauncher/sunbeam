@@ -216,7 +216,7 @@ func (c *Runner) Update(msg tea.Msg) (Page, tea.Cmd) {
 							return PushPageMsg{NewErrorPage(err)}
 						}
 
-						return ReloadMsg{}
+						return ExitMsg{}
 					})
 			}
 		case sunbeam.ActionTypeCopy:
