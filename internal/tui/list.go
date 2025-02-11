@@ -314,10 +314,6 @@ func (c *List) Update(msg tea.Msg) (Page, tea.Cmd) {
 				c.statusBar.Reset()
 			}
 
-			if msg.String() == "enter" {
-				action.Exit = true
-			}
-
 			return c, func() tea.Msg {
 				return action
 			}

@@ -47,7 +47,10 @@ if (!githubToken) {
 }
 
 try {
-  const res = await run(Deno.args[0], await toJson(Deno.stdin.readable) as sunbeam.Params);
+  const res = await run(
+    Deno.args[0],
+    await toJson(Deno.stdin.readable) as sunbeam.Params,
+  );
   if (res) {
     console.log(JSON.stringify(res));
   }

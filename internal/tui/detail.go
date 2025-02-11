@@ -124,18 +124,14 @@ func (c *Detail) Update(msg tea.Msg) (Page, tea.Cmd) {
 				return c, nil
 			}
 
-			action := c.statusBar.filtered[c.statusBar.cursor]
-			if c.statusBar.expanded {
-				c.statusBar.Reset()
-				c.input.SetValue("")
-				c.input.Blur()
-			}
-
-			if msg.String() == "enter" {
-				action.Exit = true
-			}
-
 			return c, func() tea.Msg {
+				action := c.statusBar.filtered[c.statusBar.cursor]
+				if c.statusBar.expanded {
+					c.statusBar.Reset()
+					c.input.SetValue("")
+					c.input.Blur()
+				}
+
 				return action
 			}
 		}

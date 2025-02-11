@@ -8,13 +8,10 @@ import (
 type Action struct {
 	Title string     `json:"title,omitempty"`
 	Type  ActionType `json:"type,omitempty"`
-	Exit  bool       `json:"exit,omitempty"`
 
-	Open   *OpenAction   `json:"-"`
-	Copy   *CopyAction   `json:"-"`
-	Run    *RunAction    `json:"-"`
-	Edit   *EditAction   `json:"-"`
-	Reload *ReloadAction `json:"-"`
+	Open *OpenAction `json:"-"`
+	Copy *CopyAction `json:"-"`
+	Run  *RunAction  `json:"-"`
 }
 
 func (a *Action) UnmarshalJSON(bts []byte) error {
@@ -42,11 +39,6 @@ func (a *Action) UnmarshalJSON(bts []byte) error {
 	case ActionTypeCopy:
 		a.Copy = &CopyAction{}
 		return json.Unmarshal(bts, a.Copy)
-	case ActionTypeReload:
-		a.Reload = &ReloadAction{
-			Params: map[string]any{},
-		}
-		return json.Unmarshal(bts, a.Reload)
 	}
 
 	return nil
@@ -61,12 +53,8 @@ func (a Action) MarshalJSON() ([]byte, error) {
 			"command": a.Run.Command,
 		}
 
-		if a.Run.Params != nil {
+		if len(a.Run.Params) > 0 {
 			output["params"] = a.Run.Params
-		}
-
-		if a.Run.Reload {
-			output["reload"] = true
 		}
 
 		return json.Marshal(output)
@@ -76,43 +64,23 @@ func (a Action) MarshalJSON() ([]byte, error) {
 			"type":  a.Type,
 			"url":   a.Open.Url,
 		})
-
 	case ActionTypeCopy:
 		return json.Marshal(map[string]interface{}{
 			"title": a.Title,
 			"type":  a.Type,
 			"text":  a.Copy.Text,
 		})
-	case ActionTypeReload:
-		output := map[string]interface{}{
-			"title": a.Title,
-			"type":  a.Type,
-		}
-
-		if a.Reload.Params != nil {
-			output["params"] = a.Reload.Params
-		}
-
-		return json.Marshal(output)
 	}
 
 	return nil, fmt.Errorf("unknown action type: %s", a.Type)
 }
 
-type EditAction struct {
-	Path   string `json:"path,omitempty"`
-	Reload bool   `json:"reload,omitempty"`
-}
-
-type ReloadAction struct {
-	Params map[string]any `json:"params,omitempty"`
-}
+type ReloadAction struct{}
 
 type RunAction struct {
 	Extension string         `json:"-"`
 	Command   string         `json:"command,omitempty"`
 	Params    map[string]any `json:"params,omitempty"`
-	Reload    bool           `json:"reload,omitempty"`
 }
 
 type CopyAction struct {
@@ -132,11 +100,9 @@ type OpenAction struct {
 type ActionType string
 
 const (
-	ActionTypeRun    ActionType = "run"
-	ActionTypeOpen   ActionType = "open"
-	ActionTypeCopy   ActionType = "copy"
-	ActionTypeEdit   ActionType = "edit"
-	ActionTypeReload ActionType = "reload"
+	ActionTypeRun  ActionType = "run"
+	ActionTypeOpen ActionType = "open"
+	ActionTypeCopy ActionType = "copy"
 )
 
 type Params map[string]any

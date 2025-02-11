@@ -163,7 +163,6 @@ func (c *Runner) Update(msg tea.Msg) (Page, tea.Cmd) {
 						Run: &sunbeam.RunAction{
 							Extension: msg.Run.Extension,
 							Command:   msg.Run.Command,
-							Reload:    msg.Run.Reload,
 							Params:    params,
 						},
 					}
@@ -185,25 +184,15 @@ func (c *Runner) Update(msg tea.Msg) (Page, tea.Cmd) {
 				runner := NewRunner(c.extension, command, params)
 
 				return c, PushPageCmd(runner)
-			case sunbeam.CommandModeSilent:
-				return c, func() tea.Msg {
-					_, err := c.extension.Output(context.Background(), command, params)
-
-					if err != nil {
-						return PushPageMsg{NewErrorPage(err)}
-					}
-
-					if msg.Run.Reload {
-						return ReloadMsg{}
-					}
-
-					return nil
-				}
 			case sunbeam.CommandModeAction:
 				return c, func() tea.Msg {
 					output, err := c.extension.Output(context.Background(), command, params)
 					if err != nil {
 						return PushPageMsg{NewErrorPage(err)}
+					}
+
+					if len(output) == 0 {
+						return ReloadMsg{}
 					}
 
 					var action sunbeam.Action
@@ -213,36 +202,24 @@ func (c *Runner) Update(msg tea.Msg) (Page, tea.Cmd) {
 
 					return action
 				}
+			case sunbeam.CommandModeSilent:
+				return c, func() tea.Msg {
+					_, err := c.extension.Output(context.Background(), command, params)
+
+					if err != nil {
+						return PushPageMsg{NewErrorPage(err)}
+					}
+
+					return ReloadMsg{}
+				}
 			}
-		case sunbeam.ActionTypeEdit:
-			editCmd := exec.Command(utils.FindEditor(), msg.Edit.Path)
-			return c, tea.ExecProcess(editCmd, func(err error) tea.Msg {
-				if err != nil {
-					return err
-				}
-
-				if msg.Edit.Reload {
-					c.embed.Focus()
-					return c.Reload()
-				}
-
-				if msg.Exit {
-					return ExitMsg{}
-				}
-
-				return c.embed.Focus()
-			})
 		case sunbeam.ActionTypeCopy:
 			return c, func() tea.Msg {
 				if err := clipboard.WriteAll(msg.Copy.Text); err != nil {
 					return err
 				}
 
-				if msg.Exit {
-					return ExitMsg{}
-				}
-
-				return ShowNotificationMsg{"Copied!"}
+				return ExitMsg{}
 			}
 		case sunbeam.ActionTypeOpen:
 			return c, func() tea.Msg {
@@ -250,22 +227,8 @@ func (c *Runner) Update(msg tea.Msg) (Page, tea.Cmd) {
 					return err
 				}
 
-				if msg.Exit {
-					return ExitMsg{}
-				}
-
-				return nil
+				return ExitMsg{}
 			}
-		case sunbeam.ActionTypeReload:
-			if c.params == nil {
-				c.params = make(map[string]any)
-			}
-
-			for k, v := range msg.Reload.Params {
-				c.params[k] = v
-			}
-
-			return c, c.Reload()
 		}
 
 	case error:

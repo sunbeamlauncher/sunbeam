@@ -42,12 +42,19 @@ func NewCmdFetch() *cobra.Command {
 			}
 			defer resp.Body.Close()
 
-			_, err = io.Copy(cmd.OutOrStdout(), resp.Body)
-			if err != nil {
-				return fmt.Errorf("failed to copy response body: %w", err)
-			}
+			switch resp.StatusCode {
+			case 200:
+				_, err = io.Copy(cmd.OutOrStdout(), resp.Body)
+				if err != nil {
+					return fmt.Errorf("failed to copy response body: %w", err)
+				}
 
-			return nil
+				return nil
+			case 204:
+				return nil
+			default:
+				return fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+			}
 		},
 	}
 

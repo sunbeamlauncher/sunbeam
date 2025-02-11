@@ -104,23 +104,25 @@ func (c *RootList) Update(msg tea.Msg) (Page, tea.Cmd) {
 		case "ctrl+r":
 			return c, tea.Batch(c.list.SetIsLoading(true), c.Reload())
 		case "ctrl+e":
-			return c, func() tea.Msg {
-				item, ok := c.list.Selection()
-				if !ok {
-					return nil
-				}
-
-				extensionName := item.Actions[0].Run.Extension
-				entrypoint, err := extensions.FindEntrypoint(utils.ExtensionsDir(), extensionName)
-				if err != nil {
-					return fmt.Errorf("extension %s not found", extensionName)
-				}
-
-				return sunbeam.Action{
-					Type: sunbeam.ActionTypeEdit,
-					Edit: &sunbeam.EditAction{Path: entrypoint},
-				}
+			item, ok := c.list.Selection()
+			if !ok {
+				return c, c.SetError(fmt.Errorf("no item selected"))
 			}
+
+			extensionName := item.Actions[0].Run.Extension
+			entrypoint, err := extensions.FindEntrypoint(utils.ExtensionsDir(), extensionName)
+			if err != nil {
+				return c, c.SetError(fmt.Errorf("extension %s not found", extensionName))
+			}
+
+			editCmd := exec.Command(utils.FindEditor(), entrypoint)
+			return c, tea.ExecProcess(editCmd, func(err error) tea.Msg {
+				if err != nil {
+					return err
+				}
+
+				return ReloadMsg{}
+			})
 		}
 	case ReloadMsg:
 		return c, tea.Batch(c.list.SetIsLoading(true), c.Reload())
@@ -173,7 +175,6 @@ func (c *RootList) Update(msg tea.Msg) (Page, tea.Cmd) {
 						Run: &sunbeam.RunAction{
 							Extension: msg.Run.Extension,
 							Command:   msg.Run.Command,
-							Reload:    msg.Run.Reload,
 							Params:    params,
 						},
 					}
@@ -207,17 +208,18 @@ func (c *RootList) Update(msg tea.Msg) (Page, tea.Cmd) {
 						return ShowNotificationMsg{rows[len(rows)-1]}
 					}
 
-					if msg.Exit {
-						return ExitMsg{}
-					}
-
-					return nil
+					return ExitMsg{}
 				}
+
 			case sunbeam.CommandModeAction:
 				return c, func() tea.Msg {
 					output, err := extension.Output(context.Background(), command, params)
 					if err != nil {
 						return PushPageMsg{NewErrorPage(err)}
+					}
+
+					if len(output) == 0 {
+						return ExitMsg{}
 					}
 
 					var action sunbeam.Action
@@ -234,43 +236,16 @@ func (c *RootList) Update(msg tea.Msg) (Page, tea.Cmd) {
 					return err
 				}
 
-				if msg.Exit {
-					return ExitMsg{}
-				}
-
-				return ShowNotificationMsg{"Copied!"}
+				return ExitMsg{}
 			}
-		case sunbeam.ActionTypeEdit:
-			editCmd := exec.Command(utils.FindEditor(), msg.Edit.Path)
-			return c, tea.ExecProcess(editCmd, func(err error) tea.Msg {
-				if err != nil {
-					return err
-				}
-
-				if msg.Edit.Reload {
-					return c.Reload()
-				}
-
-				if msg.Exit {
-					return ExitMsg{}
-				}
-
-				return nil
-			})
 		case sunbeam.ActionTypeOpen:
 			return c, func() tea.Msg {
 				if err := utils.Open(msg.Open.Url); err != nil {
 					return err
 				}
 
-				if msg.Exit {
-					return ExitMsg{}
-				}
-
-				return nil
+				return ExitMsg{}
 			}
-		case sunbeam.ActionTypeReload:
-			return c, tea.Sequence(c.err.SetIsLoading(true), c.Reload())
 		default:
 			return c, nil
 		}

@@ -188,8 +188,6 @@ func runExtension(extension extensions.Extension, command sunbeam.Command, param
 			}
 
 			return runExtension(extension, command, action.Run.Params)
-		case sunbeam.ActionTypeReload:
-			return nil
 		case sunbeam.ActionTypeOpen:
 			return utils.Open(action.Open.Url)
 		case sunbeam.ActionTypeCopy:

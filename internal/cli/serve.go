@@ -106,6 +106,11 @@ func NewCmdServe() *cobra.Command {
 					return
 				}
 
+				if len(output) == 0 {
+					w.WriteHeader(http.StatusNoContent)
+					return
+				}
+
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
 				_, _ = w.Write(output)

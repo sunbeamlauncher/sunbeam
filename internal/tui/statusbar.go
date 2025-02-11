@@ -143,13 +143,11 @@ func ActionTitle(action sunbeam.Action) string {
 
 	switch action.Type {
 	case sunbeam.ActionTypeRun:
-		return "Run"
+		return "Run Command"
 	case sunbeam.ActionTypeCopy:
-		return "Copy"
+		return "Copy to Clipboard"
 	case sunbeam.ActionTypeOpen:
-		return "Open"
-	case sunbeam.ActionTypeEdit:
-		return "Edit"
+		return "Open URL"
 	default:
 		return string(action.Type)
 	}

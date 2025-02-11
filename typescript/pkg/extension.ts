@@ -15,7 +15,7 @@ export type Command = {
   name: string;
   description?: string;
   params?: readonly ParamDef[];
-  mode: "filter" | "search" | "detail" | "silent";
+  mode: "filter" | "search" | "detail" | "silent" | "action";
 };
 
 export type ParamDef = {
@@ -24,4 +24,3 @@ export type ParamDef = {
   description?: string;
   optional?: boolean;
 };
-
