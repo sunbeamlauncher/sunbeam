@@ -1,8 +1,13 @@
 package utils
 
-import "os"
+import (
+	"os"
+	"os/exec"
 
-func FindEditor() string {
+	"github.com/google/shlex"
+)
+
+func editorEnv() string {
 	if editor, ok := os.LookupEnv("VISUAL"); ok {
 		return editor
 	}
@@ -12,6 +17,19 @@ func FindEditor() string {
 	}
 
 	return "vi"
+}
+
+func EditCmd(filepath string) (*exec.Cmd, error) {
+	editorArgs, err := shlex.Split(editorEnv())
+	if err != nil {
+		return nil, err
+	}
+
+	editCmd := exec.Command(editorArgs[0])
+	editCmd.Args = append(editCmd.Args, editorArgs[1:]...)
+	editCmd.Args = append(editCmd.Args, filepath)
+
+	return editCmd, nil
 }
 
 func FindShell() string {

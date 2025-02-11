@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -115,7 +114,11 @@ func (c *RootList) Update(msg tea.Msg) (Page, tea.Cmd) {
 				return c, c.SetError(fmt.Errorf("extension %s not found", extensionName))
 			}
 
-			editCmd := exec.Command(utils.FindEditor(), entrypoint)
+			editCmd, err := utils.EditCmd(entrypoint)
+			if err != nil {
+				return c, c.SetError(err)
+			}
+
 			return c, tea.ExecProcess(editCmd, func(err error) tea.Msg {
 				if err != nil {
 					return err

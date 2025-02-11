@@ -84,6 +84,7 @@ See https://pomdtr.github.io/sunbeam for more information.`,
 	rootCmd.AddCommand(NewCmdValidate())
 	rootCmd.AddCommand(NewCmdFetch())
 	rootCmd.AddCommand(NewCmdServe())
+	rootCmd.AddCommand(NewCmdEdit())
 
 	rootCmd.AddGroup(&cobra.Group{
 		ID:    "extension",

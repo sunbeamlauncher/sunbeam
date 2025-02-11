@@ -108,7 +108,12 @@ func (c *Runner) Update(msg tea.Msg) (Page, tea.Cmd) {
 			}
 			return c, PopPageCmd
 		case "ctrl+e":
-			editCmd := exec.Command(utils.FindEditor(), c.extension.Entrypoint)
+			editCmd, err := utils.EditCmd(c.extension.Entrypoint)
+			if err != nil {
+				return c, func() tea.Msg {
+					return err
+				}
+			}
 			return c, tea.ExecProcess(editCmd, func(err error) tea.Msg {
 				if err != nil {
 					return err
