@@ -3,15 +3,15 @@ package sunbeam
 type Manifest struct {
 	Title       string    `json:"title"`
 	Description string    `json:"description,omitempty"`
-	Root        []Action  `json:"root,omitempty"`
+	Actions     []Action  `json:"actions,omitempty"`
 	Commands    []Command `json:"commands,omitempty"`
 }
 
 type Command struct {
-	Name        string      `json:"name"`
-	Description string      `json:"description,omitempty"`
-	Params      []Param     `json:"params,omitempty"`
-	Mode        CommandMode `json:"mode,omitempty"`
+	Name        string         `json:"name"`
+	Description string         `json:"description,omitempty"`
+	Params      []CommandParam `json:"params,omitempty"`
+	Mode        CommandMode    `json:"mode,omitempty"`
 }
 
 type Platfom string
@@ -44,7 +44,7 @@ const (
 	InputNumber  InputType = "number"
 )
 
-type Param struct {
+type CommandParam struct {
 	Type        InputType `json:"type"`
 	Name        string    `json:"name"`
 	Description string    `json:"description,omitempty"`

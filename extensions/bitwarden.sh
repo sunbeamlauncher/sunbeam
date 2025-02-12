@@ -12,7 +12,7 @@ if [ $# -eq 0 ]; then
     jq -n '{
         title: "Bitwarden Vault",
         description: "Search your Bitwarden passwords",
-        root: [
+        actions: [
             { title: "List Items", type: "run", command: "list-items" }
         ],
         commands: [

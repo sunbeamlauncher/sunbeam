@@ -1,13 +1,13 @@
 #!/usr/bin/env -S deno run -A
 
-import * as sunbeam from "jsr:@pomdtr/sunbeam@0.0.14";
+import * as sunbeam from "jsr:@pomdtr/sunbeam@0.0.15";
 import * as base64 from "https://deno.land/std@0.202.0/encoding/base64.ts";
 import { toJson } from "jsr:@std/streams";
 
 const manifest = {
   title: "GitHub",
   description: "Search GitHub repositories",
-  root: [
+  actions: [
     {
       title: "Search Repositories",
       type: "run",

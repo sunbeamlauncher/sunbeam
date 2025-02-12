@@ -147,7 +147,7 @@ func NewSubCmdCustom(alias string, extension extensions.Extension, command sunbe
 	return cmd
 }
 
-func runExtension(extension extensions.Extension, command sunbeam.Command, params sunbeam.Params) error {
+func runExtension(extension extensions.Extension, command sunbeam.Command, params map[string]any) error {
 	if !term.IsTerminal(int(os.Stdout.Fd())) {
 		cmd, err := extension.CmdContext(context.Background(), command, params)
 		if err != nil {

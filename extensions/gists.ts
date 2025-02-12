@@ -1,7 +1,7 @@
 #!/usr/bin/env -S deno run -A
 
 import { toJson } from "jsr:@std/streams";
-import type * as sunbeam from "jsr:@pomdtr/sunbeam@0.0.14";
+import type * as sunbeam from "jsr:@pomdtr/sunbeam@0.0.15";
 
 const manifest = {
   title: "Gists",

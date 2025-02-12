@@ -12,7 +12,7 @@ if [ $# -eq 0 ]; then
 {
     title: "Browse TLDR Pages",
     description: "Browse TLDR Pages",
-    root: [
+    actions: [
         { title: "List Pages", type: "run", command: "list" }
     ],
     # each command can be called through the cli

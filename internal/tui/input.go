@@ -34,7 +34,7 @@ type TextField struct {
 	placeholder string
 }
 
-func NewTextField(input sunbeam.Param, secure bool) *TextField {
+func NewTextField(input sunbeam.CommandParam, secure bool) *TextField {
 	ti := textinput.New()
 	ti.Prompt = ""
 
@@ -105,7 +105,7 @@ func (ta *TextArea) Name() string {
 	return ta.name
 }
 
-func NewTextArea(input sunbeam.Param) Input {
+func NewTextArea(input sunbeam.CommandParam) Input {
 	ta := textarea.New()
 	ta.Prompt = ""
 
@@ -153,7 +153,7 @@ type Checkbox struct {
 	checked bool
 }
 
-func NewCheckbox(param sunbeam.Param) *Checkbox {
+func NewCheckbox(param sunbeam.CommandParam) *Checkbox {
 	checkbox := Checkbox{
 		name:  param.Name,
 		title: param.Description,
@@ -236,7 +236,7 @@ type NumberField struct {
 	*TextField
 }
 
-func NewNumberField(param sunbeam.Param) Input {
+func NewNumberField(param sunbeam.CommandParam) Input {
 	if param.Default != nil {
 		if _, ok := param.Default.(int); ok {
 			param.Default = strconv.Itoa(param.Default.(int))

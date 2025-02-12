@@ -11,7 +11,7 @@
         "description": {
             "type": "string"
         },
-        "root": {
+        "actions": {
             "type": "array",
             "items": {
                 "$ref": "./action.schema.json"

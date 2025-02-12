@@ -104,5 +104,3 @@ const (
 	ActionTypeOpen ActionType = "open"
 	ActionTypeCopy ActionType = "copy"
 )
-
-type Params map[string]any

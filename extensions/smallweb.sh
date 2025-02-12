@@ -5,7 +5,7 @@
 if [ $# -eq 0 ]; then
   jq -n '{
     title: "SmallWeb",
-    root: [
+    actions: [
       { title: "Search Apps", type: "run", command: "search-apps" }
     ],
     commands: [

@@ -49,7 +49,7 @@ func (e Extension) GetCommand(name string) (sunbeam.Command, bool) {
 func (e Extension) RootItems() []sunbeam.ListItem {
 	var items []sunbeam.ListItem
 
-	for i, action := range e.Manifest.Root {
+	for i, action := range e.Manifest.Actions {
 		title := action.Title
 		action.Title = "Run"
 
@@ -71,7 +71,7 @@ func (e Extension) RootItems() []sunbeam.ListItem {
 	return items
 }
 
-func (ext Extension) Output(ctx context.Context, command sunbeam.Command, params sunbeam.Params) ([]byte, error) {
+func (ext Extension) Output(ctx context.Context, command sunbeam.Command, params map[string]any) ([]byte, error) {
 	cmd, err := ext.CmdContext(context.Background(), command, params)
 	if err != nil {
 		return nil, err
@@ -87,7 +87,7 @@ func (ext Extension) Output(ctx context.Context, command sunbeam.Command, params
 	}
 }
 
-func (e Extension) CmdContext(ctx context.Context, command sunbeam.Command, params sunbeam.Params) (*exec.Cmd, error) {
+func (e Extension) CmdContext(ctx context.Context, command sunbeam.Command, params map[string]any) (*exec.Cmd, error) {
 	if params == nil {
 		params = make(map[string]any)
 	}

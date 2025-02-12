@@ -2,14 +2,14 @@
 
 import { DB } from "jsr:@pomdtr/sqlite@3.9.1";
 import * as fs from "https://deno.land/std@0.203.0/fs/mod.ts";
-import type * as sunbeam from "jsr:@pomdtr/sunbeam@0.0.14";
+import type * as sunbeam from "jsr:@pomdtr/sunbeam@0.0.15";
 import * as path from "https://deno.land/std@0.186.0/path/mod.ts";
 import { toJson } from "jsr:@std/streams/to-json";
 
 const manifest = {
   title: "VS Code",
   description: "Manage your VS Code projects",
-  root: [
+  actions: [
     { title: "Search Recent Projects", type: "run", command: "ls" },
   ],
   commands: [

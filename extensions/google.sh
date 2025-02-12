@@ -6,7 +6,7 @@ if [ $# -eq 0 ]; then
     jq -n '{
         title: "Google Search",
         description: "Search Google",
-        root: [
+        actions: [
             { title: "Search Google", type: "run", command: "search" }
         ],
         commands: [

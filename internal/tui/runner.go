@@ -24,10 +24,10 @@ type Runner struct {
 
 	extension extensions.Extension
 	command   sunbeam.Command
-	params    sunbeam.Params
+	params    map[string]any
 }
 
-func NewRunner(extension extensions.Extension, command sunbeam.Command, params sunbeam.Params) *Runner {
+func NewRunner(extension extensions.Extension, command sunbeam.Command, params map[string]any) *Runner {
 	var embed Page
 	switch command.Mode {
 	case sunbeam.CommandModeSearch, sunbeam.CommandModeFilter:

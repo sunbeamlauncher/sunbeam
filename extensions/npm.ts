@@ -1,11 +1,11 @@
 #!/usr/bin/env -S deno run -A
 import { toJson } from "jsr:@std/streams";
-import * as sunbeam from "jsr:@pomdtr/sunbeam@0.0.14";
+import * as sunbeam from "jsr:@pomdtr/sunbeam@0.0.15";
 
 const manifest: sunbeam.Manifest = {
   title: "NPM Search",
   description: "Search NPM packages",
-  root: [
+  actions: [
     { title: "Search NPM Packages", type: "run", command: "search" },
   ],
   commands: [

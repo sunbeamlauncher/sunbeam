@@ -7,7 +7,7 @@ EXTENSIONS_DIR="${SUNBEAM_EXTENSIONS_DIR:-$HOME/.config/sunbeam/extensions}"
 if [ $# -eq 0 ]; then
   jq -n --arg dir "$EXTENSIONS_DIR" '{
     title: "Sunbeam",
-    root: [
+    actions: [
       { title: "Search Extensions", type: "run", command: "ls" },
       { title: "Open Extensions Dir", type: "open", target: $dir }
     ],

@@ -17,7 +17,7 @@ fi
 if [ $# -eq 0 ]; then
     jq -n '{
         title: "Brew",
-        root: [
+        actions: [
             { title: "List Installed Packages", type: "run", command: "list" }
         ],
         commands: [

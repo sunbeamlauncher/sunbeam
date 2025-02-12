@@ -2,13 +2,13 @@
 
 import Parser from "npm:rss-parser@3.9.0";
 import { formatDistance } from "npm:date-fns@2.30.0";
-import * as sunbeam from "jsr:@pomdtr/sunbeam@0.0.14";
+import * as sunbeam from "jsr:@pomdtr/sunbeam@0.0.15";
 import { toJson } from "jsr:@std/streams";
 
 const manifest = {
   title: "RSS",
   description: "Manage your RSS feeds",
-  root: [
+  actions: [
     {
       title: "Julia Evans Blog",
       type: "run",

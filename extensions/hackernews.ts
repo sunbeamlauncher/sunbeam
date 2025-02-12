@@ -2,13 +2,13 @@
 
 import Parser from "npm:rss-parser";
 import { formatDistance } from "npm:date-fns";
-import * as sunbeam from "jsr:@pomdtr/sunbeam@0.0.14";
+import * as sunbeam from "jsr:@pomdtr/sunbeam@0.0.15";
 import { toJson } from "jsr:@std/streams";
 
 const manifest = {
   title: "Hacker News",
   description: "Browse Hacker News",
-  root: [
+  actions: [
     {
       title: "View Homepage",
       type: "run",

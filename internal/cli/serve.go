@@ -12,7 +12,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/pomdtr/sunbeam/internal/extensions"
 	"github.com/pomdtr/sunbeam/internal/utils"
-	"github.com/pomdtr/sunbeam/pkg/sunbeam"
 	"github.com/spf13/cobra"
 )
 
@@ -84,7 +83,7 @@ func NewCmdServe() *cobra.Command {
 					return
 				}
 
-				var params sunbeam.Params
+				var params map[string]any
 				if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
 					http.Error(w, err.Error(), http.StatusBadRequest)
 					return

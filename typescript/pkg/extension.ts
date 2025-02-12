@@ -8,7 +8,7 @@ export type Manifest = {
   title: string;
   description?: string;
   commands?: readonly Command[];
-  root?: Action[];
+  actions?: Action[];
 };
 
 export type Command = {
