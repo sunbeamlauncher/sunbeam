@@ -1,5 +1,5 @@
 #!/usr/bin/env -S deno run -A
-import type * as sunbeam from "jsr:@pomdtr/sunbeam@0.0.11";
+import type * as sunbeam from "jsr:@pomdtr/sunbeam@0.0.14";
 
 const manifest = {
   title: "Tailscale",
@@ -9,7 +9,7 @@ const manifest = {
       name: "list-devices",
       description: "Search My Devices",
       mode: "filter",
-    }
+    },
   ],
 } as const satisfies sunbeam.Manifest;
 

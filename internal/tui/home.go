@@ -235,7 +235,7 @@ func (c *HomePage) Update(msg tea.Msg) (Page, tea.Cmd) {
 			}
 		case sunbeam.ActionTypeOpen:
 			return c, func() tea.Msg {
-				if err := utils.Open(msg.Open.Url); err != nil {
+				if err := utils.Open(msg.Open.Target); err != nil {
 					return err
 				}
 

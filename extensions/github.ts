@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run -A
 
-import * as sunbeam from "jsr:@pomdtr/sunbeam@0.0.11";
+import * as sunbeam from "jsr:@pomdtr/sunbeam@0.0.14";
 import * as base64 from "https://deno.land/std@0.202.0/encoding/base64.ts";
 import { toJson } from "jsr:@std/streams";
 
@@ -16,8 +16,8 @@ const manifest = {
     {
       title: "Open Sunbeam Repo",
       type: "open",
-      url: "https://github.com/pomdtr/sunbeam"
-    }
+      target: "https://github.com/pomdtr/sunbeam",
+    },
   ],
   commands: [
     {
@@ -75,7 +75,6 @@ if (!token) {
   Deno.exit(1);
 }
 
-
 const command = Deno.args[0];
 const params = await toJson(Deno.stdin.readable) as sunbeam.Params;
 
@@ -90,9 +89,10 @@ if (command == "search-repos") {
   }
 
   const resp = await fetch(
-    `https://api.github.com/search/repositories?q=${encodeURIComponent(
-      params.query,
-    )
+    `https://api.github.com/search/repositories?q=${
+      encodeURIComponent(
+        params.query,
+      )
     }`,
     {
       headers: {
@@ -125,7 +125,7 @@ if (command == "search-repos") {
           {
             title: "Open In Browser",
             type: "open",
-            url: item.html_url,
+            target: item.html_url,
           },
           {
             title: "List Issues",
@@ -155,11 +155,14 @@ if (command == "search-repos") {
 
   console.log(JSON.stringify(list, null, 2));
 } else if (command == "list-issues") {
-  const resp = await fetch(`https://api.github.com/repos/${params.repo}/issues`, {
-    headers: {
-      Authorization: `token ${token}`,
+  const resp = await fetch(
+    `https://api.github.com/repos/${params.repo}/issues`,
+    {
+      headers: {
+        Authorization: `token ${token}`,
+      },
     },
-  });
+  );
 
   if (!resp.ok) {
     throw new Error(
@@ -177,7 +180,7 @@ if (command == "search-repos") {
           {
             title: "Open In Browser",
             type: "open",
-            url: item.html_url,
+            target: item.html_url,
           },
           {
             title: "Copy URL",
@@ -191,11 +194,14 @@ if (command == "search-repos") {
 
   console.log(JSON.stringify(list, null, 2));
 } else if (command == "list-prs") {
-  const resp = await fetch(`https://api.github.com/repos/${params.repo}/pulls`, {
-    headers: {
-      Authorization: `token ${token}`,
+  const resp = await fetch(
+    `https://api.github.com/repos/${params.repo}/pulls`,
+    {
+      headers: {
+        Authorization: `token ${token}`,
+      },
     },
-  });
+  );
 
   if (!resp.ok) {
     throw new Error(
@@ -213,7 +219,7 @@ if (command == "search-repos") {
           {
             title: "Open In Browser",
             type: "open",
-            url: item.html_url,
+            target: item.html_url,
           },
           {
             title: "Copy URL",
@@ -228,11 +234,14 @@ if (command == "search-repos") {
 
   console.log(JSON.stringify(list, null, 2));
 } else if (command == "view-readme") {
-  const resp = await fetch(`https://api.github.com/repos/${params.repo}/readme`, {
-    headers: {
-      Authorization: `token ${token}`,
+  const resp = await fetch(
+    `https://api.github.com/repos/${params.repo}/readme`,
+    {
+      headers: {
+        Authorization: `token ${token}`,
+      },
     },
-  });
+  );
 
   if (!resp.ok) {
     throw new Error(
@@ -249,7 +258,7 @@ if (command == "search-repos") {
       {
         title: "Open in Browser",
         type: "open",
-        url: data.html_url,
+        target: data.html_url,
       },
       {
         title: "List Issues",

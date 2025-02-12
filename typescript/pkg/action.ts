@@ -9,7 +9,7 @@ export type CopyAction = {
 
 export type OpenAction = {
   type: "open";
-  url: string;
+  target: string;
 } & ActionProps;
 
 export type RunAction = {

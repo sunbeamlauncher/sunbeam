@@ -1,7 +1,7 @@
 #!/usr/bin/env -S deno run -A
 
 import { toJson } from "jsr:@std/streams";
-import type * as sunbeam from "jsr:@pomdtr/sunbeam@0.0.11";
+import type * as sunbeam from "jsr:@pomdtr/sunbeam@0.0.14";
 
 const manifest = {
   title: "Gists",
@@ -95,7 +95,7 @@ async function run(command: string, params: sunbeam.Params) {
             {
               type: "open",
               title: "Open in Browser",
-              url: gist.html_url,
+              target: gist.html_url,
             },
             {
               type: "copy",
@@ -195,7 +195,7 @@ async function run(command: string, params: sunbeam.Params) {
           {
             title: "Open in Browser",
             type: "open",
-            url: gist.html_url,
+            target: gist.html_url,
           },
         ],
       } as sunbeam.Detail;

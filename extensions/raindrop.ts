@@ -1,5 +1,5 @@
 #!/usr/bin/env -S deno run -A
-import type * as sunbeam from "jsr:@pomdtr/sunbeam@0.0.11";
+import type * as sunbeam from "jsr:@pomdtr/sunbeam@0.0.14";
 
 const manifest = {
   title: "Raindrop",
@@ -49,7 +49,7 @@ if (command == "search-bookmarks") {
         {
           title: "Open URL",
           type: "open",
-          url: bookmark.link,
+          target: bookmark.link,
         },
         {
           title: "Copy URL",

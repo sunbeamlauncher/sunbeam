@@ -192,7 +192,7 @@ func runExtension(extension extensions.Extension, command sunbeam.Command, param
 
 			return runExtension(extension, command, action.Run.Params)
 		case sunbeam.ActionTypeOpen:
-			return utils.Open(action.Open.Url)
+			return utils.Open(action.Open.Target)
 		case sunbeam.ActionTypeCopy:
 			return clipboard.WriteAll(action.Copy.Text)
 		default:

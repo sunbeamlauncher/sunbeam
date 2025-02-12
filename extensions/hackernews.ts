@@ -2,14 +2,19 @@
 
 import Parser from "npm:rss-parser";
 import { formatDistance } from "npm:date-fns";
-import * as sunbeam from "jsr:@pomdtr/sunbeam@0.0.11"
+import * as sunbeam from "jsr:@pomdtr/sunbeam@0.0.14";
 import { toJson } from "jsr:@std/streams";
 
 const manifest = {
   title: "Hacker News",
   description: "Browse Hacker News",
   root: [
-    { title: "View Homepage", type: "run", command: "browse", params: { topic: "frontpage" } },
+    {
+      title: "View Homepage",
+      type: "run",
+      command: "browse",
+      params: { topic: "frontpage" },
+    },
   ],
   commands: [
     {
@@ -20,8 +25,6 @@ const manifest = {
     },
   ],
 } as const satisfies sunbeam.Manifest;
-
-
 
 if (Deno.args.length == 0) {
   console.log(JSON.stringify(manifest));
@@ -49,12 +52,12 @@ if (command == "browse") {
         {
           title: "Open in browser",
           type: "open",
-          url: item.link || "",
+          target: item.link || "",
         },
         {
           title: "Open Comments in Browser",
           type: "open",
-          url: item.guid || "",
+          target: item.guid || "",
         },
         {
           title: "Copy Link",

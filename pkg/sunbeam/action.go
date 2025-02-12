@@ -60,9 +60,9 @@ func (a Action) MarshalJSON() ([]byte, error) {
 		return json.Marshal(output)
 	case ActionTypeOpen:
 		return json.Marshal(map[string]interface{}{
-			"title": a.Title,
-			"type":  a.Type,
-			"url":   a.Open.Url,
+			"title":  a.Title,
+			"type":   a.Type,
+			"target": a.Open.Target,
 		})
 	case ActionTypeCopy:
 		return json.Marshal(map[string]interface{}{
@@ -94,7 +94,7 @@ type ExecAction struct {
 }
 
 type OpenAction struct {
-	Url string `json:"url,omitempty"`
+	Target string `json:"target,omitempty"`
 }
 
 type ActionType string

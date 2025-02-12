@@ -1,8 +1,8 @@
 #!/usr/bin/env -S deno run -A
 
-import { DB } from "jsr:@pomdtr/sqlite@3.9.1"
+import { DB } from "jsr:@pomdtr/sqlite@3.9.1";
 import * as fs from "https://deno.land/std@0.203.0/fs/mod.ts";
-import type * as sunbeam from "jsr:@pomdtr/sunbeam@0.0.11";
+import type * as sunbeam from "jsr:@pomdtr/sunbeam@0.0.14";
 import * as path from "https://deno.land/std@0.186.0/path/mod.ts";
 import { toJson } from "jsr:@std/streams/to-json";
 
@@ -26,7 +26,7 @@ const manifest = {
         name: "url",
         type: "string",
       }],
-    }
+    },
   ],
 } as const satisfies sunbeam.Manifest;
 
@@ -72,13 +72,13 @@ if (command == "ls") {
           title: "Open in VS Code",
           type: "run",
           command: "open",
-          params: { url: entry.folderUri },
+          params: { target: entry.folderUri },
         },
         {
           title: "Open Folder",
           key: "o",
           type: "open",
-          url: entry.folderUri,
+          target: entry.folderUri,
         },
         {
           title: "Copy Path",
@@ -94,10 +94,10 @@ if (command == "ls") {
 
   console.log(JSON.stringify(list));
 } else if (command == "open") {
-  const { url } = await toJson(Deno.stdin.readable) as { url: string }
+  const { url } = await toJson(Deno.stdin.readable) as { target: string };
   const command = new Deno.Command("open", {
     args: ["-a", "Visual Studio Code", url],
-  })
+  });
 
   await command.output();
 }

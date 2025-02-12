@@ -5,10 +5,11 @@ set -euo pipefail
 EXTENSIONS_DIR="${SUNBEAM_EXTENSIONS_DIR:-$HOME/.config/sunbeam/extensions}"
 
 if [ $# -eq 0 ]; then
-  jq -n '{
+  jq -n --arg dir "$EXTENSIONS_DIR" '{
     title: "Sunbeam",
     root: [
-      { title: "Search Extensions", type: "run", command: "ls" }
+      { title: "Search Extensions", type: "run", command: "ls" },
+      { title: "Open Extensions Dir", type: "open", target: $dir }
     ],
     commands: [
       { name: "ls", mode: "filter" },
@@ -28,7 +29,7 @@ if [ "$COMMAND" = "ls" ]; then
             .
         ],
         actions: [
-            { title: "Open extension", type: "open", url: . },
+            { title: "Open extension", type: "open", target: . },
             { title: "Copy Path", type: "copy", text: . },
             { title: "Remove Extension", type: "run", command: "rm", params: { path: . }, reload: true }
         ]

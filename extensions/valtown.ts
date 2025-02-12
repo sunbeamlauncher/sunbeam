@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run -A
 import { toJson } from "jsr:@std/streams";
-import * as sunbeam from "jsr:@pomdtr/sunbeam@0.0.11";
+import * as sunbeam from "jsr:@pomdtr/sunbeam@0.0.14";
 
 const manifest = {
   title: "Val Town",
@@ -44,7 +44,7 @@ if (!token) {
 async function run(command: string, params: sunbeam.Params) {
   const client = new ValTownClient(token!);
   if (command == "list") {
-    const username = params.user
+    const username = params.user;
     const { id: userID } = await client.fetchJSON(
       username ? `/v1/alias/${username}` : "/v1/me",
     );
@@ -87,9 +87,9 @@ async function run(command: string, params: sunbeam.Params) {
 }
 
 class ValTownClient {
-  constructor(private token: string) { }
+  constructor(private token: string) {}
 
-  _fetch(url: string, init?: RequestInit) {
+  _fetch(target: string, init?: RequestInit) {
     return fetch(url, {
       ...init,
       headers: {
@@ -147,7 +147,9 @@ function valToListItem(val: any): sunbeam.ListItem {
       {
         title: "Open in Browser",
         type: "open",
-        url: `https://val.town/v/${val.author.username.slice(1)}/${val.name}`,
+        target: `https://val.town/v/${
+          val.author.username.slice(1)
+        }/${val.name}`,
       },
       {
         title: "Edit Val",
@@ -161,7 +163,9 @@ function valToListItem(val: any): sunbeam.ListItem {
       {
         title: "Open Web Endpoint",
         type: "open",
-        url: `https://${val.author.username.slice(1)}-${val.name}.web.val.run`,
+        target: `https://${
+          val.author.username.slice(1)
+        }-${val.name}.web.val.run`,
       },
       {
         title: "Copy URL",

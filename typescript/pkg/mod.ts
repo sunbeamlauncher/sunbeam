@@ -1,3 +1,9 @@
-export type { List, Detail, ListItem } from "./page.ts";
-export type { Extension, Manifest, Command, ParamDef } from "./extension.ts";
-export type { Action, Params } from "./action.ts";
+export type { Detail, List, ListItem } from "./page.ts";
+export type { Command, Extension, Manifest, ParamDef } from "./extension.ts";
+export type {
+  Action,
+  CopyAction,
+  OpenAction,
+  Params,
+  RunAction,
+} from "./action.ts";

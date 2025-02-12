@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run -A
 import { toJson } from "jsr:@std/streams";
-import * as sunbeam from "jsr:@pomdtr/sunbeam@0.0.11";
+import * as sunbeam from "jsr:@pomdtr/sunbeam@0.0.14";
 
 const manifest: sunbeam.Manifest = {
   title: "NPM Search",
@@ -18,8 +18,8 @@ const manifest: sunbeam.Manifest = {
           name: "query",
           description: "Search Query",
           type: "string",
-        }
-      ]
+        },
+      ],
     },
   ],
 } as const satisfies sunbeam.Manifest;
@@ -29,9 +29,10 @@ if (Deno.args.length == 0) {
   Deno.exit(0);
 }
 
-const params = await toJson(Deno.stdin.readable) as { query: string }
+const params = await toJson(Deno.stdin.readable) as { query: string };
 const resp = await fetch(
-  `https://registry.npmjs.com/-/v1/search?text=${encodeURIComponent(params.query)
+  `https://registry.npmjs.com/-/v1/search?text=${
+    encodeURIComponent(params.query)
   }`,
 );
 const { objects: packages } = await resp.json();
@@ -44,7 +45,7 @@ for (const pkg of packages) {
       {
         type: "open",
         title: "Open Package",
-        url: pkg.package.links.npm,
+        target: pkg.package.links.npm,
       },
       {
         type: "copy",

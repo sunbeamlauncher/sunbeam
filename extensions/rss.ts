@@ -2,7 +2,7 @@
 
 import Parser from "npm:rss-parser@3.9.0";
 import { formatDistance } from "npm:date-fns@2.30.0";
-import * as sunbeam from "jsr:@pomdtr/sunbeam@0.0.11";
+import * as sunbeam from "jsr:@pomdtr/sunbeam@0.0.14";
 import { toJson } from "jsr:@std/streams";
 
 const manifest = {
@@ -14,7 +14,7 @@ const manifest = {
       type: "run",
       command: "show",
       params: { url: "https://jvns.ca/atom.xml" },
-    }
+    },
   ],
   commands: [
     {
@@ -55,7 +55,7 @@ if (Deno.args[0] == "show") {
         {
           title: "Open in browser",
           type: "open",
-          url: item.link || "",
+          target: item.link || "",
         },
         {
           title: "Copy Link",

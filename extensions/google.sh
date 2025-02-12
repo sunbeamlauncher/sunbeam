@@ -33,7 +33,7 @@ if [ "$1" = "search" ]; then
         items: map({
             title: .,
             actions: [
-                { title: "Search", type: "open", url: "https://www.google.com/search?q=\(.)" }
+                { title: "Search", type: "open", target: "https://www.google.com/search?q=\(.)" }
             ]
         })
     }'

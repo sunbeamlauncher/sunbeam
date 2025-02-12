@@ -53,7 +53,7 @@ elif [ "$1" = "list-entries" ]; then
       title: .name,
       subtitle: .type,
       actions: [
-        {title: "Open in Browser", type: "open", url: "https://devdocs.io/\($slug)/\(.path)"},
+        {title: "Open in Browser", type: "open", target: "https://devdocs.io/\($slug)/\(.path)"},
         {title: "Copy URL", key: "c", type: "copy", text: "https://devdocs.io/\($slug)/\(.path)"}
       ]
     }) | {  items: . }'
