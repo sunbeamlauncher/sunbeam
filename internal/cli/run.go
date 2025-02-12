@@ -8,24 +8,39 @@ import (
 	"os"
 	"sort"
 
-	"golang.org/x/term"
-
 	"github.com/atotto/clipboard"
 	"github.com/pomdtr/sunbeam/internal/extensions"
-	"github.com/pomdtr/sunbeam/internal/history"
 	"github.com/pomdtr/sunbeam/internal/tui"
 	"github.com/pomdtr/sunbeam/internal/utils"
 	"github.com/pomdtr/sunbeam/pkg/sunbeam"
 	"github.com/spf13/cobra"
+	"golang.org/x/term"
 )
+
+func NewCmdRun(exts []extensions.Extension) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "run",
+		Short: "Run an extension",
+	}
+
+	for _, extension := range exts {
+		command, err := NewCmdExtension(extension.Name, extension)
+		if err != nil {
+			continue
+		}
+
+		cmd.AddCommand(command)
+	}
+
+	return cmd
+}
 
 func NewCmdExtension(alias string, extension extensions.Extension) (*cobra.Command, error) {
 	rootCmd := &cobra.Command{
-		Use:     alias,
-		Short:   extension.Manifest.Title,
-		Long:    extension.Manifest.Description,
-		Args:    cobra.NoArgs,
-		GroupID: "extension",
+		Use:   alias,
+		Short: extension.Manifest.Title,
+		Long:  extension.Manifest.Description,
+		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if !term.IsTerminal(int(os.Stdout.Fd())) {
 				encoder := json.NewEncoder(os.Stdout)
@@ -35,20 +50,7 @@ func NewCmdExtension(alias string, extension extensions.Extension) (*cobra.Comma
 				return encoder.Encode(extension.Manifest)
 			}
 
-			if len(extension.Manifest.Root) == 0 {
-				return cmd.Usage()
-			}
-
-			history, err := history.Load(history.Path)
-			if err != nil {
-				return err
-			}
-
-			rootList := tui.NewHomePage(history, func() ([]sunbeam.ListItem, error) {
-				return extension.RootItems(), nil
-			})
-
-			return tui.Draw(rootList)
+			return cmd.Usage()
 		},
 	}
 
@@ -185,12 +187,7 @@ func runExtension(extension extensions.Extension, command sunbeam.Command, param
 
 		switch action.Type {
 		case sunbeam.ActionTypeRun:
-			command, ok := extension.GetCommand(action.Run.Command)
-			if !ok {
-				return fmt.Errorf("command not found: %s", action.Run.Command)
-			}
-
-			return runExtension(extension, command, action.Run.Params)
+			return fmt.Errorf("cannot chain run actions")
 		case sunbeam.ActionTypeOpen:
 			return utils.Open(action.Open.Target)
 		case sunbeam.ActionTypeCopy:

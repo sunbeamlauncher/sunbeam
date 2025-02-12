@@ -206,6 +206,10 @@ func (c *Runner) Update(msg tea.Msg) (Page, tea.Cmd) {
 							return PushPageMsg{NewErrorPage(err)}
 						}
 
+						if action.Type == sunbeam.ActionTypeRun {
+							return PushPageMsg{NewErrorPage(fmt.Errorf("nested actions are not supported"))}
+						}
+
 						return action
 					})
 			case sunbeam.CommandModeSilent:

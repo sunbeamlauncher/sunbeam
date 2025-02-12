@@ -86,11 +86,6 @@ See https://pomdtr.github.io/sunbeam for more information.`,
 	rootCmd.AddCommand(NewCmdServe())
 	rootCmd.AddCommand(NewCmdEdit())
 
-	rootCmd.AddGroup(&cobra.Group{
-		ID:    "extension",
-		Title: "Extensions Commands:",
-	})
-
 	exts, err := LoadExtensions(utils.ExtensionsDir(), false)
 	if errors.Is(err, os.ErrNotExist) {
 		return rootCmd, nil
@@ -98,13 +93,7 @@ See https://pomdtr.github.io/sunbeam for more information.`,
 		return nil, err
 	}
 
-	for _, extension := range exts {
-		command, err := NewCmdExtension(extension.Name, extension)
-		if err != nil {
-			return nil, err
-		}
-		rootCmd.AddCommand(command)
-	}
+	rootCmd.AddCommand(NewCmdRun(exts))
 
 	return rootCmd, nil
 }

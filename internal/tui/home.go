@@ -222,6 +222,10 @@ func (c *HomePage) Update(msg tea.Msg) (Page, tea.Cmd) {
 						return PushPageMsg{NewErrorPage(err)}
 					}
 
+					if action.Type == sunbeam.ActionTypeRun {
+						return PushPageMsg{NewErrorPage(fmt.Errorf("nested run actions are not supported"))}
+					}
+
 					return action
 				}
 			}
