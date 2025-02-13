@@ -87,7 +87,34 @@ func (ext Extension) Output(ctx context.Context, command sunbeam.Command, params
 	}
 }
 
+type Environ map[string]string
+
+func LoadEnviron(extension string) Environ {
+	envFile := filepath.Join(utils.ConfigDir(), "env.json")
+	if _, err := os.Stat(envFile); err != nil {
+		return nil
+	}
+
+	envBytes, err := os.ReadFile(envFile)
+	if err != nil {
+		return nil
+	}
+
+	var env map[string]Environ
+	if err := json.Unmarshal(envBytes, &env); err != nil {
+		return nil
+	}
+
+	environ, ok := env[extension]
+	if !ok {
+		return nil
+	}
+
+	return environ
+}
+
 func (e Extension) CmdContext(ctx context.Context, command sunbeam.Command, params map[string]any) (*exec.Cmd, error) {
+
 	if params == nil {
 		params = make(map[string]any)
 	}
@@ -118,6 +145,10 @@ func (e Extension) CmdContext(ctx context.Context, command sunbeam.Command, para
 	}
 
 	cmd.Env = os.Environ()
+	for k, v := range LoadEnviron(e.Name) {
+		cmd.Env = append(cmd.Env, fmt.Sprintf("%s=%s", k, v))
+	}
+
 	cmd.Env = append(cmd.Env, "SUNBEAM=1")
 	return cmd, nil
 }
