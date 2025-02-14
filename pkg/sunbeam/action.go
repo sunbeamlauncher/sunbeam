@@ -53,10 +53,6 @@ func (a Action) MarshalJSON() ([]byte, error) {
 			"command": a.Run.Command,
 		}
 
-		if a.Run.Extension != "" {
-			output["extension"] = a.Run.Extension
-		}
-
 		if len(a.Run.Params) > 0 {
 			output["params"] = a.Run.Params
 		}
@@ -82,7 +78,7 @@ func (a Action) MarshalJSON() ([]byte, error) {
 type ReloadAction struct{}
 
 type RunAction struct {
-	Extension string         `json:"extension,omitempty"`
+	Extension string         `json:"-"`
 	Command   string         `json:"command,omitempty"`
 	Params    map[string]any `json:"params,omitempty"`
 }
