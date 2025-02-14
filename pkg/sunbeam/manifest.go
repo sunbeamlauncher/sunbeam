@@ -1,10 +1,9 @@
 package sunbeam
 
 type Manifest struct {
-	Title       string    `json:"title"`
-	Description string    `json:"description,omitempty"`
-	Actions     []Action  `json:"actions,omitempty"`
-	Commands    []Command `json:"commands,omitempty"`
+	Title    string    `json:"title"`
+	Actions  []Action  `json:"actions,omitempty"`
+	Commands []Command `json:"commands,omitempty"`
 }
 
 type Command struct {
