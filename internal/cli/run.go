@@ -20,7 +20,7 @@ import (
 func NewCmdRun(exts []extensions.Extension) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "run",
-		Short: "Run an extension",
+		Short: "Run an extension command",
 	}
 
 	for _, extension := range exts {
@@ -39,19 +39,7 @@ func NewCmdExtension(alias string, extension extensions.Extension) (*cobra.Comma
 	rootCmd := &cobra.Command{
 		Use:   alias,
 		Short: extension.Manifest.Title,
-		Long:  extension.Manifest.Description,
 		Args:  cobra.NoArgs,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			if !term.IsTerminal(int(os.Stdout.Fd())) {
-				encoder := json.NewEncoder(os.Stdout)
-				encoder.SetIndent("", "  ")
-				encoder.SetEscapeHTML(false)
-
-				return encoder.Encode(extension.Manifest)
-			}
-
-			return cmd.Usage()
-		},
 	}
 
 	rootCmd.CompletionOptions.DisableDefaultCmd = true

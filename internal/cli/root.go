@@ -24,9 +24,6 @@ var (
 )
 
 func NewRootCmd() (*cobra.Command, error) {
-	var flags struct {
-		reload bool
-	}
 	// rootCmd represents the base command when called without any subcommands
 	var rootCmd = &cobra.Command{
 		Use:          "sunbeam",
@@ -37,15 +34,6 @@ func NewRootCmd() (*cobra.Command, error) {
 
 See https://pomdtr.github.io/sunbeam for more information.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if flags.reload {
-				exts, err := LoadExtensions(utils.ExtensionsDir(), true)
-				if err != nil {
-					return fmt.Errorf("failed to reload extensions: %w", err)
-				}
-
-				fmt.Fprintf(os.Stderr, "Reloaded %d extensions\n", len(exts))
-			}
-
 			if !term.IsTerminal(int(os.Stdout.Fd())) {
 				exts, err := LoadExtensions(utils.ExtensionsDir(), false)
 				if err != nil {
@@ -80,11 +68,12 @@ See https://pomdtr.github.io/sunbeam for more information.`,
 		},
 	}
 
-	rootCmd.Flags().BoolVar(&flags.reload, "reload", false, "Reload extension manifests")
 	rootCmd.AddCommand(NewCmdValidate())
+	rootCmd.AddCommand(NewCmdLs())
 	rootCmd.AddCommand(NewCmdFetch())
 	rootCmd.AddCommand(NewCmdServe())
 	rootCmd.AddCommand(NewCmdEdit())
+	rootCmd.AddCommand(NewCmdReload())
 
 	exts, err := LoadExtensions(utils.ExtensionsDir(), false)
 	if errors.Is(err, os.ErrNotExist) {

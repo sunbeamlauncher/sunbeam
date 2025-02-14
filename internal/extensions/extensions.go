@@ -19,7 +19,7 @@ import (
 type Extension struct {
 	Name string `json:"name"`
 	sunbeam.Manifest
-	Entrypoint string `json:"-"`
+	Entrypoint string `json:"entrypoint"`
 }
 
 type Preferences map[string]any

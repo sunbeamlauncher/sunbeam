@@ -15,6 +15,7 @@ export type OpenAction = {
 export type RunAction = {
   type: "run";
   command: string;
+  extension?: string;
   params?: Params;
 } & ActionProps;
 

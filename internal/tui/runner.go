@@ -139,7 +139,28 @@ func (c *Runner) Update(msg tea.Msg) (Page, tea.Cmd) {
 	case sunbeam.Action:
 		switch msg.Type {
 		case sunbeam.ActionTypeRun:
-			command, ok := c.extension.GetCommand(msg.Run.Command)
+			var extension extensions.Extension
+			if msg.Run.Extension == "" || msg.Run.Extension == c.extension.Name {
+				extension = c.extension
+			} else {
+				entrypoint, err := extensions.FindEntrypoint(utils.ExtensionsDir(), msg.Run.Extension)
+				if err != nil {
+					return c, func() tea.Msg {
+						return fmt.Errorf("extension %s not found", msg.Run.Extension)
+					}
+				}
+
+				ext, err := extensions.LoadExtension(entrypoint, true)
+				if err != nil {
+					return c, func() tea.Msg {
+						return err
+					}
+				}
+
+				extension = ext
+			}
+
+			command, ok := extension.GetCommand(msg.Run.Command)
 			if !ok {
 				c.embed = NewErrorPage(fmt.Errorf("command %s not found", msg.Run.Command))
 				c.embed.SetSize(c.width, c.height)

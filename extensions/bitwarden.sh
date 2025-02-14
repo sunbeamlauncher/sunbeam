@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -euo pipefail
+set -eo pipefail
 
 # check if jq is installed
 if ! [ -x "$(command -v jq)" ]; then

@@ -10,10 +10,9 @@ set -eu
 if [ $# -eq 0 ]; then
     jq -n '
 {
-    title: "Browse TLDR Pages",
-    description: "Browse TLDR Pages",
+    title: "TLDR Pages",
     actions: [
-        { title: "List Pages", type: "run", command: "list" }
+        { title: "Search Pages", type: "run", command: "list" }
     ],
     # each command can be called through the cli
     commands: [

@@ -15,6 +15,12 @@ const manifest = {
       command: "show",
       params: { url: "https://jvns.ca/atom.xml" },
     },
+    {
+      title: "Hackers News Replies",
+      type: "run",
+      command: "show",
+      params: { url: "https://hnrss.org/replies?id=pomdtr" },
+    },
   ],
   commands: [
     {

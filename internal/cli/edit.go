@@ -48,7 +48,7 @@ func completeExtension(cmd *cobra.Command, args []string, toComplete string) ([]
 
 	var completions []string
 	for _, extension := range extensions {
-		completions = append(completions, fmt.Sprintf("%s\t%s", extension.Name, extension.Entrypoint))
+		completions = append(completions, fmt.Sprintf("%s\t%s", extension.Name, extension.Title))
 	}
 
 	return completions, cobra.ShellCompDirectiveNoFileComp
